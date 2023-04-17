@@ -24,6 +24,7 @@ mutable struct Lander
     γ_p::CReal     # [rad] Maximum pointing angle
     v_max_V::CReal # [m/s] Maximum vertical velocity
     v_max_L::CReal # [m/s] Maximum lateral velocity
+    τ_max::CReal   # [s] Maximum deferrability between branch points (in terms of node count)
 
     # >> Initial condition state <<
     r0::CVector    # [m] Initial position
@@ -83,6 +84,8 @@ function Lander()::Lander
     γ_p = 5 * DEG_2_RAD
     v_max_V = 5
     v_max_L = 5
+    τ_max = 5
+    # τ_max = 10000 # arbitrarily-large number to disable deferrability constraint
 
     # >> Initial condition state <<
     r0 = 0*e_x + 0*e_y + 100*e_z
@@ -137,6 +140,7 @@ function Lander()::Lander
         γ_p,
         v_max_V,
         v_max_L,
+        τ_max,
         r0,
         v0,
         n_targs,

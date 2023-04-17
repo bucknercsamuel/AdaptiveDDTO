@@ -49,8 +49,8 @@ function plot_addto_parametric_3D_trajectory(
 
     # ..:: Plot DDTO branches ::..
     color = "black"
+    branch_iter = 1
     for branch_set in guid_branches
-        branch_iter = 1
         for branch in branch_set
             color = ddto_colors[branch_iter]
             idx_dd = branch.idx_dd
@@ -63,8 +63,8 @@ function plot_addto_parametric_3D_trajectory(
             if idx_ub < length(r_branch[1,:])-1
                 ax.plot(r_branch[1,idx_ub], r_branch[2,idx_ub], r_branch[3,idx_ub]; color="red", linestyle="none", marker="s", markersize=3, markeredgecolor="none", zorder=10)
             end
-            branch_iter += 1
         end
+        branch_iter += 1
     end
 
     # ..:: Plot simulation solution ::..
@@ -86,8 +86,8 @@ function plot_addto_parametric_3D_trajectory(
     y_shadow_offset = ylims[2] # Needs to be adjusted based on viewing azimuth unfortunately
 
     color = "black"
+    branch_iter = 1
     for branch_set in guid_branches
-        branch_iter = 1
         for branch in branch_set
             color = ddto_colors[branch_iter]
             idx_dd = branch.idx_dd
@@ -96,8 +96,8 @@ function plot_addto_parametric_3D_trajectory(
             idx_ub = idx_lb + min(length(r_branch[1,idx_lb+1:end]), ddto_branch_truncation_idx)
             ax.plot(fill(x_shadow_offset, length(r_branch[2,idx_lb:idx_ub])), r_branch[2,idx_lb:idx_ub], r_branch[3,idx_lb:idx_ub]; color="silver", linewidth=1.5, zorder=1)
             ax.plot(r_branch[1,idx_lb:idx_ub], fill(y_shadow_offset, length(r_branch[2,idx_lb:idx_ub])), r_branch[3,idx_lb:idx_ub]; color="silver", linewidth=1.5, zorder=1)
-            branch_iter += 1
         end
+        branch_iter += 1
     end
     ax.plot(fill(x_shadow_offset, length(sim.t)), sim.r[2,:], sim.r[3,:]; style_ct..., color="gray", zorder=1)
     ax.plot(sim.r[1,:], fill(y_shadow_offset, length(sim.t)), sim.r[3,:]; style_ct..., color="gray", zorder=1)
@@ -460,9 +460,14 @@ function replay_addto_landing(
         frames=Int(round(N_sim/speedup_ratio)), 
         interval=Int(round(1000/(ds_factor*time_mult))), 
         blit=true, repeat=false)
+    
+    # Display to notebook
     video = anim.to_html5_video()
     html = IJulia.HTML(video)
     IJulia.display(html)
     plt.close()
+
+    # Save as GIF
+    # anim.save("$fig_path/$fun_name.gif", writer="ffmpeg", fps=30)
     ;
 end

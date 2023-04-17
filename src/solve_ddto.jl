@@ -148,8 +148,7 @@ function solve_bisection_qcvx_ddto(lander::Lander, costs_optimal::CVector, cost_
 
     # Initial search bracket
     τ_min = 0
-    τ_max = min(lander.N_targs...) - 2
-    # τ_max = 5
+    τ_max = min(min(lander.N_targs...) - 2, lander.τ_max)
 
     # Bisection search to solve quasiconvex (QCvx) optimization problem
     VERB_DDTO && println("=== Bisection Search for QCvx Optimization ===")
