@@ -275,14 +275,12 @@ function replay_addto_landing(
     ax.dist = 11
 
     # Extra formatting
+    ax.set_title("Adaptive-DDTO: Simulated Landing")
     ax.set_xlabel("Downrange [m]", labelpad=10)
     ax.set_ylabel("Crossrange [m]", labelpad=10)
     ax.set_zlabel("Altitude [m]", labelpad=10)
     ax.margins(z=0)
     ax.set_aspect("equal")
-    
-    # set_axes_equal(ax)
-    # plt.tight_layout()
 
     # Set limits to be equal based off starting altitude (assumes strict descent)
     h0 = sim.r[3,1]
@@ -290,6 +288,21 @@ function replay_addto_landing(
     ax.set_xlim([-span/2, span/2])
     ax.set_ylim([-span/2, span/2])
     ax.set_zlim([0, span])
+
+    # Add missing pane frame edge (bug with matplotlib)
+    # (uncomment to see what this adds)
+    function lims(mplotlims)
+        scale = 1.021
+        offset = (mplotlims[2] - mplotlims[1])*scale
+        return mplotlims[2] - offset, mplotlims[1] + offset
+    end
+    xlims, ylims, zlims = ax.get_xlim(), ax.get_ylim(), ax.get_zlim()
+    xlims_, ylims_, zlims_ = lims(xlims), lims(ylims), lims(zlims)
+    iii = transpose([xlims_[1], ylims_[1], zlims_[1]])
+    fff = transpose([xlims_[1], ylims_[1], zlims_[2]])
+    p = mpl.mplot3d.art3d.Poly3DCollection([[iii, fff]])
+    p.set_color("lightgray")
+    ax.add_collection3d(p)
 
     # ..:: Animation design parameters ::..
     alpha_decay = 0.8 # fading out rate for DDTO trajectory spawns
@@ -314,7 +327,7 @@ function replay_addto_landing(
 
 
     # ..:: Dynamically-updated plot handles ::..
-    global title = ax.set_title("Adaptive-DDTO: Simulated Landing \n (Sim Time = " * string(round(0, digits=2)) * " sec)")
+    global timer_text = ax.text2D(0.5, -0.05, "Sim Time = " * string(0) * " sec", transform=ax.transAxes, fontsize=14, verticalalignment="bottom", horizontalalignment="center")
     global ddto_trajs = [ax.plot([],[],[], color=ddto_colors[k], linewidth=1.5, alpha=1)[1] for k = 1:lander.n_targs_max]
     global ddto_trajs_fading = [ax.plot([],[],[], color="red", linewidth=1.5, alpha=1)[1] for k = 1:lander.n_targs_max] # Used for fade-out effect
     global guid_traj = ax.plot([],[],[], color="gray", linestyle="-", linewidth=2)[1]
@@ -375,9 +388,9 @@ function replay_addto_landing(
     
         if idx <= N_sim-1
             
-            # Update title
+            # Update timer text
             cur_time = t_sim[idx]
-            title.set_text("Adaptive-DDTO: Simulated Landing \n (Sim Time = " * string(round(cur_time, digits=2)) * " sec)")
+            timer_text.set_text("Sim Time = " * string(round(cur_time, digits=2)) * " sec")
 
             # Update quad body
             (arm1,arm2) = quad_body_geom(sim.r[1,idx], sim.r[2,idx], sim.r[3,idx], quad_width)
@@ -475,9 +488,9 @@ function replay_addto_landing(
 
         # Update statement
         if iter > 0 && iter % 10 == 0
-            println("Animation update iteration: $iter")
+            println("Number of frames processed: $iter")
         end
-        return title, quad_body_center, quad_body_arm1, quad_body_arm2, sim_traj, ddto_trajs..., guid_traj
+        return timer_text, quad_body_center, quad_body_arm1, quad_body_arm2, sim_traj, ddto_trajs..., guid_traj
     end
 
     # ..:: Animate! ::..
@@ -487,7 +500,7 @@ function replay_addto_landing(
         interval=Int(round(1000/(ds_factor*time_mult))), 
         blit=true, repeat=false)
     
-    # # Display to notebook
+    # Display to notebook
     # video = anim.to_html5_video()
     # html = IJulia.HTML(video)
     # IJulia.display(html)
