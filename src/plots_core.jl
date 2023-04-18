@@ -275,14 +275,14 @@ function replay_addto_landing(
     ax.dist = 11
 
     # Extra formatting
-    ax.set_xlabel("Downrange [m]")
-    ax.set_ylabel("Crossrange [m]")
-    ax.set_zlabel("Altitude [m]")
-    # ax.legend(ncol=subplot_cols, loc="center left")
+    ax.set_xlabel("Downrange [m]", labelpad=10)
+    ax.set_ylabel("Crossrange [m]", labelpad=10)
+    ax.set_zlabel("Altitude [m]", labelpad=10)
     ax.margins(z=0)
     ax.set_aspect("equal")
+    
     # set_axes_equal(ax)
-    plt.tight_layout()
+    # plt.tight_layout()
 
     # Set limits to be equal based off starting altitude (assumes strict descent)
     h0 = sim.r[3,1]
@@ -314,16 +314,42 @@ function replay_addto_landing(
 
 
     # ..:: Dynamically-updated plot handles ::..
-    global title = ax.set_title("HALO: Simulated Landing (Sim Time = " * string(round(0, digits=2)) * " sec)")
+    global title = ax.set_title("Adaptive-DDTO: Simulated Landing \n (Sim Time = " * string(round(0, digits=2)) * " sec)")
     global ddto_trajs = [ax.plot([],[],[], color=ddto_colors[k], linewidth=1.5, alpha=1)[1] for k = 1:lander.n_targs_max]
     global ddto_trajs_fading = [ax.plot([],[],[], color="red", linewidth=1.5, alpha=1)[1] for k = 1:lander.n_targs_max] # Used for fade-out effect
     global guid_traj = ax.plot([],[],[], color="gray", linestyle="-", linewidth=2)[1]
     global sim_traj = ax.plot([],[],[], color="black", linewidth=2)[1]
-    global ddto_branch_points = [ax.plot([],[],[], markerfacecolor=ddto_colors[k], markeredgecolor="gray", markeredgewidth=0.5, marker="d", markersize=4)[1] for k = 1:lander.n_targs_max]
-    global ddto_branch_points_fading = [ax.plot([],[],[], markerfacecolor="red", markeredgecolor="none", markeredgewidth=0.5, marker="d", markersize=4)[1] for k = 1:lander.n_targs_max] # Used for fade-out effect
+    global ddto_branch_points = [ax.plot([],[],[], color="none", markerfacecolor=ddto_colors[k], markeredgecolor="gray", markeredgewidth=0.5, marker="d", markersize=4)[1] for k = 1:lander.n_targs_max]
+    global ddto_branch_points_fading = [ax.plot([],[],[], color="none", markerfacecolor="red", markeredgecolor="none", markeredgewidth=0.5, marker="d", markersize=4)[1] for k = 1:lander.n_targs_max] # Used for fade-out effect
     global quad_body_arm1 = ax.plot([],[],[], color="red", linewidth=1)[1]
     global quad_body_arm2 = ax.plot([],[],[], color="red", linewidth=1)[1]
-    global quad_body_center = ax.plot([],[],[], color="maroon", marker=".", markersize=6)[1]
+    global quad_body_center = ax.plot([],[],[], color="none", markerfacecolor="maroon", markeredgecolor="none", marker=".", markersize=7)[1]
+    quad_body_legend = ax.plot([],[],[], color="red", markerfacecolor="maroon", markeredgecolor="none", marker=".", markersize=10)[1]
+
+    # Create legend
+    midpoint = Int(ceil(lander.n_targs_max/2))
+    legend_handles = [
+        quad_body_legend,
+        sim_traj,
+        guid_traj,
+        (ddto_trajs[1], ddto_trajs[midpoint], ddto_trajs[lander.n_targs_max]),
+        (ddto_branch_points[1], ddto_branch_points[midpoint], ddto_branch_points[lander.n_targs_max]),
+    ]
+    legend_labels = [
+        "Quadcopter",
+        "Executed Trajectory",
+        "Deferred Trajectory",
+        "DDTO Branches",
+        "DDTO Branch Points",
+    ]
+
+    # Need to use PyCall because handler_map needs Python's native tuple handle :/
+    py"""
+    import matplotlib
+    def custom_legend(ax, handles, labels):
+        ax.legend(handles, labels, loc="upper center", bbox_to_anchor=(0.5, 1), ncol=2, frameon=False, handler_map={tuple: matplotlib.legend_handler.HandlerTuple(None)})
+    """
+    py"custom_legend"(ax, legend_handles, legend_labels)
 
     # ..:: Define the quadcopter visual geometry at a given point ::..
     function quad_body_geom(x::CReal, y::CReal, z::CReal, width::CReal)::Tuple{CMatrix,CMatrix}
@@ -351,7 +377,7 @@ function replay_addto_landing(
             
             # Update title
             cur_time = t_sim[idx]
-            title.set_text("HALO: Simulated Landing (Sim Time = " * string(round(cur_time, digits=2)) * " sec)")
+            title.set_text("Adaptive-DDTO: Simulated Landing \n (Sim Time = " * string(round(cur_time, digits=2)) * " sec)")
 
             # Update quad body
             (arm1,arm2) = quad_body_geom(sim.r[1,idx], sim.r[2,idx], sim.r[3,idx], quad_width)
@@ -448,9 +474,9 @@ function replay_addto_landing(
         end
 
         # Update statement
-        # if iter > 0 && iter % 10 == 0
-        #     println("Animation update iteration: $iter")
-        # end
+        if iter > 0 && iter % 10 == 0
+            println("Animation update iteration: $iter")
+        end
         return title, quad_body_center, quad_body_arm1, quad_body_arm2, sim_traj, ddto_trajs..., guid_traj
     end
 
@@ -461,13 +487,13 @@ function replay_addto_landing(
         interval=Int(round(1000/(ds_factor*time_mult))), 
         blit=true, repeat=false)
     
-    # Display to notebook
-    video = anim.to_html5_video()
-    html = IJulia.HTML(video)
-    IJulia.display(html)
-    plt.close()
+    # # Display to notebook
+    # video = anim.to_html5_video()
+    # html = IJulia.HTML(video)
+    # IJulia.display(html)
+    # plt.close()
 
     # Save as GIF
-    # anim.save("$fig_path/$fun_name.gif", writer="ffmpeg", fps=30)
+    anim.save("$fig_path/$fun_name.gif", writer="ffmpeg", fps=60)
     ;
 end

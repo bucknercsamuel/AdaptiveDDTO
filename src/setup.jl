@@ -12,6 +12,7 @@ using PyPlot
 using PyCall
 using Colors
 using Noise
+using IJulia
 
 # Data types
 const CReal = Float64
