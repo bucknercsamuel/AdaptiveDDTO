@@ -58,7 +58,7 @@ function extract_trunk_segment(lander::Lander, ddto_sol::Array{DDTOSolution})::S
     end
 
     # Derived variables
-    t_trunk = collect(0:length(Γ_trunk)) * lander.Δt
+    t_trunk = collect(0:length(Γ_trunk)-1) * lander.Δt
     T_nrm_trunk = CVector([norm(T_trunk[:,i],2) for i=1:length(Γ_trunk)])
     γ_trunk = CVector([acos(dot(T_trunk[:,k],e_z)/norm(T_trunk[:,k],2)) for k=1:length(Γ_trunk)])
 

@@ -306,7 +306,7 @@ function replay_addto_landing(
 
     # ..:: Animation design parameters ::..
     alpha_decay = 0.8 # fading out rate for DDTO trajectory spawns
-    ds_factor   = 10 # downsampling factor 
+    ds_factor   = 60 # downsampling factor 
     # end_padding = 3 # [s] number of seconds to hold after finishing animation
     time_mult   = 1 # Animation time scaling factor (realtime = 1)
     quad_width  = 15. # [m] width of quadcopter body
@@ -507,6 +507,6 @@ function replay_addto_landing(
     # plt.close()
 
     # Save as GIF
-    anim.save("$fig_path/$fun_name.gif", writer="ffmpeg", fps=60)
+    anim.save("$fig_path/$fun_name.mp4", writer="ffmpeg", fps=60)
     ;
 end
