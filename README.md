@@ -12,12 +12,14 @@ This repository contains all (ongoing) research developmental work on Adaptive D
 This repository contains entirely Julia code, with associated Manifest/Project files at the top level (for more information on how Julia works, see [the Julia tutorials page](https://julialang.org/learning/tutorials/)). All code is contained within the 📂`src` folder, which notably contains a 📜`demo.ipynb` jupyter notebook file that demonstrates the capabilities of Adaptive-DDTO on a sandbox problem, along with all associated solving, plotting and utility files. Currently, you will need to have all packages mentioned in 📜`src/setup.jl` for both internal use in this package, and for use in the HALO framework as a submodule.
 
 ## Citing
-If you use Adaptive-DDTO in your research, kindly cite the following associated publication (ICRA 2023 conference citation to be released shortly).
+If you use Adaptive-DDTO in your research, kindly cite the following associated publication.
 ```
-@article{hayner2023halo,
+@inproceedings{hayner2023halo,
   title={HALO: Hazard-Aware Landing Optimization for Autonomous Systems},
-  author={Hayner, Christopher R and Buckner, Samuel C and Broyles, Daniel and Madewell, Evelyn and Leung, Karen and Acikmese, Behcet},
-  journal={arXiv preprint arXiv:2304.01583},
-  year={2023}
+  author={Hayner, Christopher R and Buckner, Samuel C and Broyles, Daniel and Madewell, Evelyn and Leung, Karen and A{\c{c}}ikme{\c{s}}e, Beh{\c{c}}et},
+  booktitle={2023 IEEE International Conference on Robotics and Automation (ICRA)},
+  pages={3261--3267},
+  year={2023},
+  organization={IEEE}
 }
 ```
