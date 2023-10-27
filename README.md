@@ -9,7 +9,7 @@ This repository contains all (ongoing) research developmental work on Adaptive D
 - [Deferring Decision in Multi-target Trajectory Optimization](https://arc.aiaa.org/doi/abs/10.2514/6.2022-1583) (along with [this presentation](https://www.aa.washington.edu/sites/aa/files/news/2022%20Research%20Showcase%20pdfs/Purna_DDTO_poster.pdf))
 
 ## Setup
-This repository contains entirely Julia code, with associated Manifest/Project files at the top level (for more information on how Julia works, see [the Julia tutorials page](https://julialang.org/learning/tutorials/)). All code is contained within the 📂`src` folder, which notably contains a 📜`demo.ipynb` jupyter notebook file that demonstrates the capabilities of Adaptive-DDTO on a sandbox problem, along with all associated solving, plotting and utility files.
+This repository contains entirely Julia code, with associated Manifest/Project files at the top level (for more information on how Julia works, see [the Julia tutorials page](https://julialang.org/learning/tutorials/)). All code is contained within the 📂`src` folder, which notably contains a 📜`demo.ipynb` jupyter notebook file that demonstrates the capabilities of Adaptive-DDTO on a sandbox problem, along with all associated solving, plotting and utility files. Currently, you will need to have all packages mentioned in 📜`src/setup.jl` for both internal use in this package, and for use in the HALO framework as a submodule.
 
 ## Citing
 If you use Adaptive-DDTO in your research, kindly cite the following associated publication (ICRA 2023 conference citation to be released shortly).
