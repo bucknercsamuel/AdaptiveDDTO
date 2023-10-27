@@ -72,3 +72,7 @@ function sort_des_score!(lander::Lander)
     # Sort the last two targets to always be increasing since there is no rejection preference between the two
     lander.λ_targs[end-1:end] = sort(lander.λ_targs[end-1:end])
 end
+
+function dump_vehicle_params(lander::Lander)
+    dump(lander)
+end
