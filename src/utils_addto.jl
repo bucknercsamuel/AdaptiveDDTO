@@ -179,12 +179,7 @@ function switch_decision(lander::Lander, branch_targ::Int)::Bool
     # Check if desirability score of branch targ is greater than that of all other targs
     des_score = zeros(lander.n_targs)
     for j = 1 : lander.n_targs
-        des_score[j] = 
-            lander.p_targs["pcd"][j] * lander.w_des[1] + 
-            lander.p_targs["prox_veh"][j] * lander.w_des[2] + 
-            lander.p_targs["prox_clust"][j] * lander.w_des[3] + 
-            lander.p_targs["µ_99"][j] * lander.w_des[4] + 
-            lander.R_targs[j] * lander.w_des[5]
+        des_score[j] = target_desirability_score(lander, j)
     end
 
     if des_score[branch_targ_idx] > maximum(des_score[other_targ_idx])
