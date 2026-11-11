@@ -167,6 +167,33 @@ function Lander()::Lander
     return lander
 end
 
+"""
+    target_desirability_score(lander::Lander, j::Int)::CReal
+
+Compute the weighted desirability of target `j`. Exactly zero-weighted metrics
+are inactive and need not have finite values. Active metrics and weights must
+be finite; an invalid score cannot silently influence ranking or switching.
+"""
+function target_desirability_score(lander::Lander, j::Int)::CReal
+    values = (
+        lander.p_targs["pcd"][j],
+        lander.p_targs["prox_veh"][j],
+        lander.p_targs["prox_clust"][j],
+        lander.p_targs["µ_99"][j],
+        lander.R_targs[j],
+    )
+
+    score = 0.0
+    for (weight, value) in zip(lander.w_des, values)
+        isfinite(weight) || throw(ArgumentError("Nonfinite desirability weight"))
+        iszero(weight) && continue
+        isfinite(value) || throw(ArgumentError("Nonfinite active target metric"))
+        score += weight * value
+    end
+    isfinite(score) || throw(ArgumentError("Nonfinite target desirability score"))
+    return score
+end
+
 
 # ..:: Solver Solutions ::..
 
